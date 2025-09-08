@@ -1,0 +1,35 @@
+#服务器配置
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+#Spring 框架配置
+spring:
+  application:
+    name: yzh
+
+  #数据库
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://121.36.61.73:3306/yzh?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 931488674Wl!
+    #------------------hikaricp链接池优化配置------------#
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      max-lifetime: 1800000
+      idle-timeout: 600000
+      connection-timeout: 30000
+      connection-init-sql: SELECT 1
+      keepalive-time: 30000
+
+#配置mapper
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.gsly.yzh.domain
+  configuration:
+    map-underscore-to-camel-case: true
+    auto-mapping-behavior: full
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
