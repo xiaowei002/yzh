@@ -16,7 +16,8 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/addUser")
-    public boolean addUser(UserEntity user) {
+    public boolean addUser() {
+        UserEntity user = new UserEntity();
         user.setUsername("yzh");
         user.setPassword("123456");
         user.setNickname("杨振海");
