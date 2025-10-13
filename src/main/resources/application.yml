@@ -8,6 +8,10 @@ server:
 spring:
   application:
     name: yzh
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
 
   #数据库
   datasource:
@@ -33,3 +37,9 @@ mybatis-plus:
     map-underscore-to-camel-case: true
     auto-mapping-behavior: full
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#配置minio
+minio:
+  endpoint: http://121.36.61.73:9001   # MinIO 服务地址
+  access-key: yzh-minio           # 账号
+  secret-key: 931488674Wl!           # 密码
+  bucket-name: yzh-bucket          # 你要用的桶名

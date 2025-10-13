@@ -2,6 +2,7 @@ package com.gsly.yzh.controller;
 
 import com.gsly.yzh.domain.UserEntity;
 import com.gsly.yzh.service.UserService;
+import com.gsly.yzh.utils.ResponseVO;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,8 +17,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/addUser")
-    public boolean addUser() {
-        UserEntity user = new UserEntity();
+    public ResponseVO<Boolean> addUser(UserEntity user) {
         user.setUsername("yzh");
         user.setPassword("123456");
         user.setNickname("杨振海");
@@ -25,6 +25,7 @@ public class UserController {
         user.setEmail("xxx@gmail.com");
         user.setStatus("1");
         user.setClassId(1L);
-        return userService.insertUser(user);
+        boolean b = userService.insertUser(user);
+        return ResponseVO.success(b);
     }
 }

@@ -1,10 +1,11 @@
-package com.gsly.yzh;
+package com.gsly.yzh.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
@@ -16,26 +17,41 @@ import java.lang.annotation.Annotation;
 import java.util.Objects;
 
 /**
- * @author 魏国伟
- * 接口统一返回
+ * 统一异常处理和返回值
  */
-@RestControllerAdvice
 @Slf4j
+@RestControllerAdvice
 public class ResponseResultBodyAdvice implements ResponseBodyAdvice<Object> {
 
     @Resource
     private ObjectMapper objectMapper;
 
 
+    /**
+     * 判断类或者方法是否使用了 @ResponseResultBody
+     */
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
         return true;
     }
 
-    @Override
+    /**
+     * 当类或者方法使用了 @ResponseResultBody 就会调用这个方法
+     */
     @SneakyThrows
+    @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
 
-        return objectMapper.writeValueAsString(body);
+        //如果返回类型是string，那么springmvc是直接返回的，此时需要手动转化为json
+        // 当body都为null时，下面的if判断条件都不满足，如果接口返回类似为String，会报错com.shepherd.fast.global.ResponseVO cannot be cast to java.lang.String
+        Class<?> returnClass = returnType.getMethod().getReturnType();
+        if (body instanceof String || Objects.equals(returnClass, String.class)) {
+            return objectMapper.writeValueAsString(ResponseVO.success(body));
+        }
+        // 防止重复包裹的问题出现
+        if (body instanceof ResponseVO) {
+            return body;
+        }
+        return ResponseVO.success(body);
     }
 }
