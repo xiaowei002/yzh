@@ -1,6 +1,8 @@
 package com.gsly.yzh.domain;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
@@ -16,32 +18,14 @@ public class BaseEntity implements Serializable {
     private Long id;
 
     /**
-     * 创建人
-     */
-    private String createdBy;
-
-    /**
-     * 更新人
-     */
-    private String updatedBy;
-
-    /**
      * 创建时间
      */
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
 
     /**
      *  更新时间
      */
+    @TableField(fill = FieldFill.UPDATE)
     private LocalDateTime updatedAt;
-
-    /**
-     * 版本号
-     */
-    private Integer version;
-
-    /**
-     * 是否删除
-     */
-    private Integer isDeleted;
 }

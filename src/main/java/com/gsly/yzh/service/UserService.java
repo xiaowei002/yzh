@@ -5,6 +5,40 @@ import com.gsly.yzh.domain.UserEntity;
 import org.springframework.stereotype.Service;
 
 public interface UserService extends IService<UserEntity> {
+    /**
+     * 注册
+     * @param user
+     * @return
+     */
     boolean insertUser(UserEntity user);
 
+    /**
+     * 判断用户是否存在
+     * @param username
+     * @return
+     */
+    boolean existsUser(String username);
+
+    /**
+     * 禁用用户
+     * @param id
+     * @return
+     */
+    boolean forbiddenUser(Long id);
+
+
+    /**
+     * 启用用户
+     * @param id
+     * @return
+     */
+    boolean enableUser(Long id);
+
+    /**
+     * 登录
+     * @param username 用户名
+     * @param password 密码
+     * @return token
+     */
+    String login(String username, String password);
 }

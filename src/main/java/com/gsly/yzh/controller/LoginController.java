@@ -1,26 +1,23 @@
 package com.gsly.yzh.controller;
 
 import com.gsly.yzh.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import jakarta.annotation.Resource;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/login")
+@RequestMapping
 public class LoginController {
 
-    @Autowired
+    @Resource
     private UserService userService;
 
-    @PostMapping("/login")
-    public String login(@RequestParam("username") String username, @RequestParam("password") String password) {
-
-        return "login";
-
-
-
+    @GetMapping("/login")
+    public String login(@RequestParam("username") String username,
+                        @RequestParam("password") String password) {
+        userService.login(username, password);
     }
-
 
 }
