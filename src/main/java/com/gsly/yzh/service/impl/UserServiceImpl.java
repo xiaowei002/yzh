@@ -1,9 +1,12 @@
 package com.gsly.yzh.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gsly.yzh.domain.UserEntity;
+import com.gsly.yzh.domain.dto.req.UserReqDTO;
 import com.gsly.yzh.mapper.UserMapper;
 import com.gsly.yzh.service.UserService;
 import com.gsly.yzh.utils.BizException;
@@ -21,10 +24,10 @@ import java.util.Objects;
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> implements UserService {
 
+    public static final String BEARER = "Bearer ";
+
     @Resource
     private UserMapper userMapper;
-
-
 
     @Override
     public boolean insertUser(UserEntity user) {
@@ -44,10 +47,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         if (existsClassId(user.getClassId())) {
             throw new BizException("当前用户绑定的班级已经被绑定，一个用户只能绑定一个班级！");
         }
+        user.setRole(0);//普通用户
         user.setStatus(1); //启用
         String password = PasswordEncrypt.encryptPassword(user.getPassword());
         user.setPassword(password);
         return userMapper.insert(user) > 0;
+    }
+
+    /**
+     *
+     * @param userReqDTO
+     * @return
+     */
+    @Override
+    public IPage<UserEntity> getUserPageList(UserReqDTO userReqDTO) {
+        LambdaQueryWrapper<UserEntity> wrapper = Wrappers.lambdaQuery();
+        wrapper.like(StringUtils.isNotBlank(userReqDTO.getUsername()), UserEntity::getUsername, userReqDTO.getUsername());
+        wrapper.like(StringUtils.isNotBlank(userReqDTO.getNickname()), UserEntity::getNickname, userReqDTO.getNickname());
+        wrapper.eq(Objects.nonNull(userReqDTO.getStatus()), UserEntity::getStatus, userReqDTO.getStatus());
+        return userMapper.selectPage(userReqDTO, wrapper);
     }
 
     /**
@@ -64,10 +82,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         LambdaQueryWrapper<UserEntity> wrapper = Wrappers.lambdaQuery();
         wrapper.eq(UserEntity::getUsername, username);
         UserEntity userEntity = userMapper.selectOne(wrapper);
-        if (Objects.isNull(userEntity) || !password.equals(userEntity.getPassword())) {
+        if (Objects.isNull(userEntity) || !PasswordEncrypt.matches(password, userEntity.getPassword())) {
             throw new BizException("用户名或密码错误！");
         }
-        return JwtUtils.generateToken(userEntity);
+        String s = JwtUtils.generateToken(userEntity);
+        return BEARER + s; //返回token
+    }
+
+    /**
+     * 根据id删除用户
+     * @param id
+     * @return
+     */
+    @Override
+    public boolean deleteUserById(Long id) {
+        return userMapper.deleteById(id) > 0;
     }
 
     /**

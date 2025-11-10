@@ -1,7 +1,9 @@
 package com.gsly.yzh.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.gsly.yzh.domain.UserEntity;
+import com.gsly.yzh.domain.dto.req.UserReqDTO;
 import org.springframework.stereotype.Service;
 
 public interface UserService extends IService<UserEntity> {
@@ -34,6 +36,14 @@ public interface UserService extends IService<UserEntity> {
      */
     boolean enableUser(Long id);
 
+
+    /**
+     * 根据id删除用户
+     * @param id
+     * @return
+     */
+    boolean deleteUserById(Long id);
+
     /**
      * 登录
      * @param username 用户名
@@ -41,4 +51,13 @@ public interface UserService extends IService<UserEntity> {
      * @return token
      */
     String login(String username, String password);
+
+
+    /**
+     * 用户分页接口
+     * @param userReqDTO
+     * @return
+     */
+    IPage<UserEntity> getUserPageList(UserReqDTO  userReqDTO);
+
 }
