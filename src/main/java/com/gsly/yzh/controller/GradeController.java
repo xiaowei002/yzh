@@ -56,7 +56,7 @@ public class GradeController {
      * @return 统一返回
      */
     @PutMapping("/deleteById/{id}")
-    public ResponseVO<Boolean> enable(@PathVariable("id") Long id){
+    public ResponseVO<Boolean> deleteById(@PathVariable("id") Long id){
         boolean b = gradeService.deleteGradeById(id);
         return ResponseVO.success(b);
     }
@@ -71,6 +71,4 @@ public class GradeController {
         IPage<GradeEntity> userPageList = gradeService.getGradePageList(gradeReqDTO);
         return ResponseVO.success(userPageList);
     }
-
-
 }

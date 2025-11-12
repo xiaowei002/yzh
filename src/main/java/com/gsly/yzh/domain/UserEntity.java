@@ -2,6 +2,8 @@ package com.gsly.yzh.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -16,6 +18,7 @@ public class UserEntity extends BaseEntity {
      * 班级id
      */
     @TableField
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long classId;
 
     /**

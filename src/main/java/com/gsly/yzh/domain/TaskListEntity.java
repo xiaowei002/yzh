@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @TableName("TASK_LIST")
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class TaskListEntity extends BaseEntity{
+public class TaskListEntity extends BaseEntity {
 
     /**
      * 任务名称
@@ -40,4 +40,9 @@ public class TaskListEntity extends BaseEntity{
     @TableField
     private String userId;
 
+    /**
+     * 状态 1进行中，0已完结
+     */
+    @TableField
+    private Integer status;
 }
