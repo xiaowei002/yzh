@@ -7,13 +7,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class TaskListReqDto extends Page<TaskListEntity> {
-
-    /**
-     * 状态
-     */
-    private Integer status;
-
+public class TaskListReqDTO extends Page<TaskListEntity> {
 
     /**
      * 名称

@@ -7,7 +7,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class TaskListUpdDto {
+public class TaskListUpdDTO {
 
     /**
      * id
@@ -29,9 +29,4 @@ public class TaskListUpdDto {
      * 类型
      */
     private String type;
-
-    /**
-     * 任务下发人员
-     */
-    private String userId;
 }

@@ -28,11 +28,11 @@ public class JwtUtils {
      */
     public static String generateToken(UserEntity user) {
         return Jwts.builder()
-                .setSubject(user.getUsername())
+                .setSubject(String.valueOf(user.getId()))
                 .claim("role", user.getRole())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(KEY)
+                .setIssuedAt(new Date()) // 签发时间
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // 过期时间
+                .signWith(KEY) // 签名密钥
                 .compact();
     }
 

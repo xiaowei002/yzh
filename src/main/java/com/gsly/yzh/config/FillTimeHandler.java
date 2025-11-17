@@ -32,17 +32,4 @@ public class FillTimeHandler implements MetaObjectHandler {
         this.setFieldValByName("updatedAt", LocalDateTime.now(), metaObject);
     }
 
-
-
-    @Scheduled(
-            cron = "0 */1 * * * *"
-    )
-    public void schedule(){
-        log.debug("定时任务检查管理员布置任务是否完成");
-
-
-
-
-        LocalDateTime now = LocalDateTime.now();
-    }
 }

@@ -1,12 +1,13 @@
 package com.gsly.yzh.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.gsly.yzh.annotation.RolePermission;
 import com.gsly.yzh.domain.GradeEntity;
 import com.gsly.yzh.domain.TaskListEntity;
 import com.gsly.yzh.domain.dto.req.GradeReqDTO;
-import com.gsly.yzh.domain.dto.req.TaskListReqDto;
-import com.gsly.yzh.domain.dto.req.TaskListSaveDto;
-import com.gsly.yzh.domain.dto.req.TaskListUpdDto;
+import com.gsly.yzh.domain.dto.req.TaskListReqDTO;
+import com.gsly.yzh.domain.dto.req.TaskListSaveDTO;
+import com.gsly.yzh.domain.dto.req.TaskListUpdDTO;
 import com.gsly.yzh.mapper.TaskListMapper;
 import com.gsly.yzh.service.TaskListService;
 import com.gsly.yzh.utils.ResponseVO;
@@ -27,7 +28,8 @@ public class TaskListController {
      * @return 统一返回
      */
     @PostMapping("/addTaskList")
-    public ResponseVO<Boolean> addTaskList(@Valid @RequestBody TaskListSaveDto taskListSaveDto) {
+    @RolePermission
+    public ResponseVO<Boolean> addTaskList(@Valid @RequestBody TaskListSaveDTO taskListSaveDto) {
         boolean b = taskListService.addTaskList(taskListSaveDto);
         return ResponseVO.success(b);
     }
@@ -39,7 +41,8 @@ public class TaskListController {
      * @return 统一返回
      */
     @PutMapping("/updTaskList")
-    public ResponseVO<Boolean> updTaskList(@Valid@RequestBody TaskListUpdDto taskListUpdDto){
+    @RolePermission
+    public ResponseVO<Boolean> updTaskList(@Valid @RequestBody TaskListUpdDTO taskListUpdDto){
         boolean b = taskListService.updTaskList(taskListUpdDto);
         return ResponseVO.success(b);
     }
@@ -50,6 +53,7 @@ public class TaskListController {
      * @return 统一返回
      */
     @PutMapping("/delTaskList/{id}")
+    @RolePermission
     public ResponseVO<Boolean> delTaskList(@PathVariable("id") Long id){
         boolean b = taskListService.delTaskList(id);
         return ResponseVO.success(b);
@@ -61,9 +65,8 @@ public class TaskListController {
      * @return
      */
     @GetMapping("/getPageList")
-    public ResponseVO<IPage<TaskListEntity>> getPageList(@RequestBody TaskListReqDto taskListReqDto){
+    public ResponseVO<IPage<TaskListEntity>> getPageList(@RequestBody TaskListReqDTO taskListReqDto){
         IPage<TaskListEntity> userPageList = taskListService.getPageList(taskListReqDto);
         return ResponseVO.success(userPageList);
     }
-
 }

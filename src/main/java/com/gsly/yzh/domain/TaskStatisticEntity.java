@@ -6,16 +6,14 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import jdk.jfr.DataAmount;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-/**
- * 未完成统计表
- * @author 魏国伟
- */
+import java.time.LocalDateTime;
+
 @Data
-@TableName("TASK_STATICS")
-public class TaskStaticsEntity {
+@TableName("task_statistic")
+public class TaskStatisticEntity {
 
     /**
      * id
@@ -32,8 +30,30 @@ public class TaskStaticsEntity {
     private Long taskId;
 
     /**
-     * 未完成用户
+     * 用户id
      */
     @TableField
-    private String unCompleteUser;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long userId;
+
+
+    /**
+     * 任务名称
+     */
+    @TableField
+    private String taskName;
+
+    /**
+     * 用户名
+     */
+    @TableField
+    private String userName;
+
+
+    /**
+     * 截止时间
+     */
+    @TableField
+    private LocalDateTime deadLine;
+
 }

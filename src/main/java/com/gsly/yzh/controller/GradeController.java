@@ -1,6 +1,7 @@
 package com.gsly.yzh.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.gsly.yzh.annotation.RolePermission;
 import com.gsly.yzh.domain.GradeEntity;
 import com.gsly.yzh.domain.UserEntity;
 import com.gsly.yzh.domain.dto.req.GradeReqDTO;
@@ -23,6 +24,7 @@ public class GradeController {
      * @return 统一返回
      */
     @PostMapping("/addGrade")
+    @RolePermission
     public ResponseVO<Boolean> addGrade(@RequestBody GradeEntity user) {
         boolean b = gradeService.insertGrade(user);
         return ResponseVO.success(b);
@@ -34,6 +36,7 @@ public class GradeController {
      * @return 统一返回
      */
     @GetMapping("/exist")
+    @RolePermission
     public ResponseVO<Boolean> exist(@RequestBody GradeEntity gradeEntity){
         boolean b = gradeService.existGrade(gradeEntity);
         return ResponseVO.success(b);
@@ -45,6 +48,7 @@ public class GradeController {
      * @return 统一返回
      */
     @PutMapping("/updGrade")
+    @RolePermission
     public ResponseVO<Boolean> updGrade(@RequestBody GradeEntity gradeEntity){
         boolean b = gradeService.updateGrade(gradeEntity);
         return ResponseVO.success(b);
@@ -56,6 +60,7 @@ public class GradeController {
      * @return 统一返回
      */
     @PutMapping("/deleteById/{id}")
+    @RolePermission
     public ResponseVO<Boolean> deleteById(@PathVariable("id") Long id){
         boolean b = gradeService.deleteGradeById(id);
         return ResponseVO.success(b);
@@ -67,6 +72,7 @@ public class GradeController {
      * @return
      */
     @GetMapping("/getGradePageList")
+    @RolePermission
     public ResponseVO<IPage<GradeEntity>> getGradePageList(@RequestBody GradeReqDTO gradeReqDTO){
         IPage<GradeEntity> userPageList = gradeService.getGradePageList(gradeReqDTO);
         return ResponseVO.success(userPageList);

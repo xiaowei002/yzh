@@ -28,52 +28,54 @@ public class GlobalExceptionHandler {
      * @return
      */
     @ResponseBody
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(Exception.class)
-    public ResponseVO exceptionHandler(Exception e){
-   
-        // 处理业务异常
+    public ResponseVO<?> exceptionHandler(Exception e) {
+        //业务异常（保留原始信息返回给前端）
         if (e instanceof BizException bizException) {
-            if (bizException.getCode() == null) {
-                bizException.setCode(ResponseStatusEnum.BAD_REQUEST.getCode());
-            }
-            return ResponseVO.failure(bizException.getCode(), bizException.getMessage());
-        } else if (e instanceof MethodArgumentNotValidException methodArgumentNotValidException) {
-            // 参数检验异常
+            log.warn("【业务异常】code={}, message={}", bizException.getCode(), bizException.getMessage());
+            Integer code = bizException.getCode() != null
+                    ? bizException.getCode()
+                    : ResponseStatusEnum.BAD_REQUEST.getCode();
+            return ResponseVO.failure(code, bizException.getMessage());
+        }
+
+        //参数校验异常
+        else if (e instanceof MethodArgumentNotValidException methodArgumentNotValidException) {
             Map<String, String> map = new HashMap<>();
             BindingResult result = methodArgumentNotValidException.getBindingResult();
-            result.getFieldErrors().forEach((item)->{
-   
-                String message = item.getDefaultMessage();
-                String field = item.getField();
-                map.put(field, message);
-            });
-            log.error("数据校验出现错误：", e);
+            result.getFieldErrors().forEach(item -> map.put(item.getField(), item.getDefaultMessage()));
+            log.error("【参数校验错误】{}", map, e);
             return ResponseVO.failure(ResponseStatusEnum.BAD_REQUEST, map);
-        } else if (e instanceof HttpRequestMethodNotSupportedException) {
-   
-            log.error("请求方法错误：", e);
+        }
+
+        //请求方法不支持
+        else if (e instanceof HttpRequestMethodNotSupportedException) {
+            log.error("【请求方法错误】", e);
             return ResponseVO.failure(ResponseStatusEnum.BAD_REQUEST.getCode(), "请求方法不正确");
-        } else if (e instanceof MissingServletRequestParameterException) {
-   
-            log.error("请求参数缺失：", e);
-            MissingServletRequestParameterException ex = (MissingServletRequestParameterException) e;
-            return ResponseVO.failure(ResponseStatusEnum.BAD_REQUEST.getCode(), "请求参数缺少: " + ex.getParameterName());
-        } else if (e instanceof MethodArgumentTypeMismatchException) {
-   
-            log.error("请求参数类型错误：", e);
-            MethodArgumentTypeMismatchException ex = (MethodArgumentTypeMismatchException) e;
-            return ResponseVO.failure(ResponseStatusEnum.BAD_REQUEST.getCode(), "请求参数类型不正确：" + ex.getName());
-        } else if (e instanceof NoHandlerFoundException) {
-   
-            NoHandlerFoundException ex = (NoHandlerFoundException) e;
-            log.error("请求地址不存在：", e);
-            return ResponseVO.failure(ResponseStatusEnum.NOT_EXIST, ex.getRequestURL());
-        } else {
-   
-            //如果是系统的异常，比如空指针这些异常
+        }
+
+        //缺少请求参数
+        else if (e instanceof MissingServletRequestParameterException ex) {
+            log.error("【请求参数缺失】", e);
+            return ResponseVO.failure(ResponseStatusEnum.BAD_REQUEST.getCode(), "缺少参数：" + ex.getParameterName());
+        }
+
+        //参数类型错误
+        else if (e instanceof MethodArgumentTypeMismatchException ex) {
+            log.error("【请求参数类型错误】", e);
+            return ResponseVO.failure(ResponseStatusEnum.BAD_REQUEST.getCode(), "参数类型错误：" + ex.getName());
+        }
+
+        //路径不存在
+        else if (e instanceof NoHandlerFoundException ex) {
+            log.error("【路径不存在】{}", ex.getRequestURL(), e);
+            return ResponseVO.failure(ResponseStatusEnum.NOT_EXIST, "请求路径不存在: " + ex.getRequestURL());
+        }
+
+        //其他系统异常
+        else {
             log.error("【系统异常】", e);
-            return ResponseVO.failure(ResponseStatusEnum.SYSTEM_ERROR.getCode(), ResponseStatusEnum.SYSTEM_ERROR.getMsg());
+            return ResponseVO.failure(ResponseStatusEnum.SYSTEM_ERROR.getCode(), "系统繁忙，请稍后再试");
         }
     }
 

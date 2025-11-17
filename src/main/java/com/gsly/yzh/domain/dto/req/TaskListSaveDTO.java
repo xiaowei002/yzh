@@ -3,13 +3,15 @@ package com.gsly.yzh.domain.dto.req;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.gsly.yzh.domain.TaskListEntity;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
-public class TaskListSaveDto {
+public class TaskListSaveDTO {
     /**
      * 任务名称
      */
@@ -29,8 +31,13 @@ public class TaskListSaveDto {
     private String type;
 
     /**
-     * 任务下发人员
+     * 任务描述
      */
-    @NotBlank
-    private String userId;
+    private String description;
+
+    /**
+     * 用户
+     */
+    @NotEmpty
+    private List<Long> userIdList;
 }

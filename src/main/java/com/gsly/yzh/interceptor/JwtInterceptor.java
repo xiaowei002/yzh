@@ -3,6 +3,7 @@ package com.gsly.yzh.interceptor;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.gsly.yzh.annotation.RolePermission;
 import com.gsly.yzh.utils.JwtUtils;
+import com.gsly.yzh.utils.UserContext;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,10 +25,16 @@ public class JwtInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        // 预检请求直接放行
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+            return true;
+        }
+
         //获取token
         String authorization = request.getHeader("Authorization");
         //不合法的token
-        if (authorization != null && !authorization.startsWith("Bearer ")) {
+        if (StringUtils.isBlank(authorization) || !authorization.startsWith("Bearer ")) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("请登录后再访问！");
             return false;
@@ -38,7 +45,7 @@ public class JwtInterceptor implements HandlerInterceptor {
         //解析
         try {
             claims = JwtUtils.parseToken(token);
-            request.setAttribute("username", claims.get("username"));
+            request.setAttribute("userId", claims.getSubject());
             request.setAttribute("role", claims.get("role"));
         } catch (ExpiredJwtException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -49,6 +56,8 @@ public class JwtInterceptor implements HandlerInterceptor {
             response.getWriter().write("token 无效");
             return false;
         }
+        //设置当前登录用户
+        UserContext.setUser(claims.getSubject());
 
         //权限校验
         if (handler instanceof HandlerMethod handlerMethod) {
@@ -63,8 +72,20 @@ public class JwtInterceptor implements HandlerInterceptor {
                     return false;
                 }
             }
-            return false;
         }
         return true;
+    }
+
+    /**
+     * 防止内存泄露
+     * @param request
+     * @param response
+     * @param handler
+     * @param ex
+     * @throws Exception
+     */
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        UserContext.clear();
     }
 }

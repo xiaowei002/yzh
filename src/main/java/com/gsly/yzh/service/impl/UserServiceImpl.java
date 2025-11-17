@@ -53,6 +53,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         user.setPassword(password);
         return userMapper.insert(user) > 0;
     }
+//
+//    public void create() {
+//        UserEntity userEntity = new UserEntity();
+//        userEntity.setUsername("yzh");
+//        userEntity.setPassword("yzh123456");
+//        String password = PasswordEncrypt.encryptPassword(userEntity.getPassword());
+//        userEntity.setPassword(password);
+//        userEntity.setRole(1);
+//        userMapper.insert(userEntity);
+//    }
 
     /**
      *

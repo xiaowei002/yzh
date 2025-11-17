@@ -1,6 +1,7 @@
 package com.gsly.yzh.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.gsly.yzh.annotation.RolePermission;
 import com.gsly.yzh.domain.UserEntity;
 import com.gsly.yzh.domain.dto.req.UserReqDTO;
 import com.gsly.yzh.service.UserService;
@@ -26,6 +27,7 @@ public class UserController {
         return ResponseVO.success(b);
     }
 
+
     /**
      * 判断用户是否存在
      * @param username 用户名
@@ -43,6 +45,7 @@ public class UserController {
      * @return 统一返回
      */
     @PutMapping("/forbidden/{id}")
+    @RolePermission
     public ResponseVO<Boolean> forbidden(@PathVariable("id") Long id){
         boolean b = userService.forbiddenUser(id);
         return ResponseVO.success(b);
@@ -54,6 +57,7 @@ public class UserController {
      * @return 统一返回
      */
     @PutMapping("/enable/{id}")
+    @RolePermission
     public ResponseVO<Boolean> enable(@PathVariable("id") Long id){
         boolean b = userService.enableUser(id);
         return ResponseVO.success(b);
@@ -65,10 +69,17 @@ public class UserController {
      * @return
      */
     @GetMapping("/getUserPageList")
-    public ResponseVO<IPage<UserEntity>> getUserPageList(@RequestBody UserReqDTO userReqDTO){
+    @RolePermission
+    public ResponseVO<IPage<UserEntity>> getUserPageList(UserReqDTO userReqDTO){
         IPage<UserEntity> userPageList = userService.getUserPageList(userReqDTO);
         return ResponseVO.success(userPageList);
     }
+//
+//
+//    @GetMapping("/test")
+//    public void test(){
+//        userService.create();
+//    }
 
     /**
      * 根据id删除
@@ -76,17 +87,10 @@ public class UserController {
      * @return
      */
     @DeleteMapping("/deleteById/{id}")
+    @RolePermission
     public ResponseVO<Boolean> deleteById(@PathVariable("id") Long id){
         boolean b = userService.deleteUserById(id);
         return ResponseVO.success(b);
     }
 }
-/**
- *  任务表                       任务完成表           任务统计表
- *  id                          id                 id
- *  任务名称                     任务id              任务id
- *  任务截止时间                  完成人（班长）       未完成人员
- *  任务上传格式（PDF，PPT,EXCEL）完成时间
- *  任务下发人员（班长）
- *
- */
+

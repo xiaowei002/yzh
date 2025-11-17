@@ -10,11 +10,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * 文件上传下载工具类
@@ -102,4 +107,47 @@ public class FileOperationImpl implements FileOperation {
             throw new BizException("文件下载失败!");
         }
     }
+
+
+    @Override
+    public void downloadBatch(List<String> fileNames, HttpServletResponse response) {
+        if (fileNames == null || fileNames.isEmpty()) {
+            throw new BizException("文件列表为空！");
+        }
+        try {
+            String zipFileName = "files.zip";
+            response.setContentType("application/octet-stream");
+            String encodedFileName = URLEncoder.encode(zipFileName, StandardCharsets.UTF_8);
+            response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encodedFileName);
+
+            try (ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(response.getOutputStream()))) {
+                for (String fileName : fileNames) {
+                    // 获取 MinIO 对象
+                    try (InputStream is = minioClient.getObject(
+                            GetObjectArgs.builder()
+                                    .bucket(minioProperties.getBucketName())
+                                    .object(fileName)
+                                    .build());
+                         BufferedInputStream bis = new BufferedInputStream(is)) {
+
+                        // 去掉前缀获取原始文件名
+                        String originalFileName = fileName.substring(fileName.lastIndexOf('_') + 1);
+                        zos.putNextEntry(new ZipEntry(originalFileName));
+
+                        byte[] buffer = new byte[1024];
+                        int len;
+                        while ((len = bis.read(buffer)) != -1) {
+                            zos.write(buffer, 0, len);
+                        }
+                        zos.closeEntry();
+                    }
+                }
+                zos.finish();
+            }
+        } catch (Exception e) {
+            log.error("批量下载文件失败: {}", e.getMessage(), e);
+            throw new BizException("批量下载失败！");
+        }
+    }
+
 }

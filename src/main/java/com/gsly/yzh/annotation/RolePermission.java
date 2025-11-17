@@ -12,5 +12,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RolePermission {
-    int value(); // 0 普通用户，1管理员
+    int value() default 1; // 0 普通用户，1管理员
 }

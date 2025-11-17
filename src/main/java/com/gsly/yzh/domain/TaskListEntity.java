@@ -34,15 +34,10 @@ public class TaskListEntity extends BaseEntity {
     @TableField
     private String type;
 
-    /**
-     * 任务下发人员
-     */
-    @TableField
-    private String userId;
 
     /**
      * 状态 1进行中，0已完结
      */
     @TableField
-    private Integer status;
+    private String description;
 }

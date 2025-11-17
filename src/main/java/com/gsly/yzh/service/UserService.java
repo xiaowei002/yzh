@@ -29,6 +29,8 @@ public interface UserService extends IService<UserEntity> {
     boolean forbiddenUser(Long id);
 
 
+//    void create();
+
     /**
      * 启用用户
      * @param id
