@@ -37,14 +37,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
         if (Strings.isBlank(user.getPassword())) {
             throw new BizException("密码不能为空！");
         }
-        if (Objects.isNull(user.getClassId())) {
-            throw new BizException("需要选择班级！");
-        }
         if (existsUser(user.getUsername())) {
             throw new BizException("当前用户名已存在！");
         }
-        //判断新用户绑定的班级是否已经被绑定
-        if (existsClassId(user.getClassId())) {
+        // 如果提供了班级ID，判断班级是否已经被绑定
+        if (user.getClassId() != null && existsClassId(user.getClassId())) {
             throw new BizException("当前用户绑定的班级已经被绑定，一个用户只能绑定一个班级！");
         }
         user.setRole(0);//普通用户
@@ -96,7 +93,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserEntity> impleme
             throw new BizException("用户名或密码错误！");
         }
         String s = JwtUtils.generateToken(userEntity);
-        return BEARER + s; //返回token
+        return s; // 返回原始 token
     }
 
     /**

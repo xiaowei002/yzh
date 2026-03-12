@@ -92,5 +92,17 @@ public class UserController {
         boolean b = userService.deleteUserById(id);
         return ResponseVO.success(b);
     }
+
+    /**
+     * 更新用户
+     * @param user 用户信息
+     * @return 统一返回
+     */
+    @PutMapping("/update")
+    @RolePermission
+    public ResponseVO<Boolean> updateUser(@RequestBody UserEntity user) {
+        boolean b = userService.updateById(user);
+        return ResponseVO.success(b);
+    }
 }
 

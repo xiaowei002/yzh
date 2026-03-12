@@ -1,6 +1,6 @@
 #服务器配置
 server:
-  port: 8080
+  port: 8081
   servlet:
     context-path: /
 
@@ -16,7 +16,7 @@ spring:
   #数据库
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://121.36.61.73:3306/yzh?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://47.94.166.196:3306/yzh?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: root
     password: 931488674Wl!
     #------------------hikaricp链接池优化配置------------#
@@ -39,7 +39,7 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 #配置minio
 minio:
-  endpoint: http://121.36.61.73:9001   # MinIO 服务地址
+  endpoint: http://47.94.166.196:9000   # MinIO 服务地址
   access-key: yzh-minio           # 账号
   secret-key: 931488674Wl!           # 密码
   bucket-name: yzh-bucket          # 你要用的桶名

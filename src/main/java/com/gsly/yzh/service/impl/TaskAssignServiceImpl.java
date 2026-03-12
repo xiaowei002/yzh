@@ -92,9 +92,13 @@ public class TaskAssignServiceImpl extends ServiceImpl<TaskAssignMapper, TaskAss
         List<String> canUploadList = Arrays.asList(type); //允许上传的类型
         //校验类型
         String originalFilename = file.getOriginalFilename();
-        String fileType = originalFilename.substring(originalFilename.lastIndexOf("."));
+        if (originalFilename == null || !originalFilename.contains(".")) {
+             throw new BizException("上传的文件名不合法！");
+        }
+        // 获取后缀（不带点），例如 "pdf"
+        String fileType = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
         if (!canUploadList.contains(fileType)) {
-            throw new BizException(String.format("提交失败，当前上传类型{}不支持", fileType));
+            throw new BizException(String.format("提交失败，当前上传类型 [%s] 不支持", fileType));
         }
         //获取当前登录用户
         String userId = UserContext.getUser();

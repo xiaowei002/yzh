@@ -25,7 +25,7 @@ public class PasswordEncrypt {
      * @return 是否匹配
      */
     public static boolean matches(String password, String encryptedPassword) {
-        return DigestUtils.md5DigestAsHex(password.getBytes()).equals(encryptedPassword);
+        return DigestUtils.md5DigestAsHex(password.getBytes()).toLowerCase().equals(encryptedPassword);
     }
 
 }

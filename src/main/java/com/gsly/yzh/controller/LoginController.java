@@ -20,4 +20,9 @@ public class LoginController {
         return userService.login(username, password);
     }
 
+    @GetMapping("/logout")
+    public String logout() {
+        return "logout";
+    }
+
 }

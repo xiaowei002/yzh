@@ -65,7 +65,7 @@ public class TaskListController {
      * @return
      */
     @GetMapping("/getPageList")
-    public ResponseVO<IPage<TaskListEntity>> getPageList(@RequestBody TaskListReqDTO taskListReqDto){
+    public ResponseVO<IPage<TaskListEntity>> getPageList(TaskListReqDTO taskListReqDto){
         IPage<TaskListEntity> userPageList = taskListService.getPageList(taskListReqDto);
         return ResponseVO.success(userPageList);
     }

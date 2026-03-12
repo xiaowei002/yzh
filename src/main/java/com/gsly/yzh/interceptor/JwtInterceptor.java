@@ -31,6 +31,9 @@ public class JwtInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/plain;charset=UTF-8");
+
         //获取token
         String authorization = request.getHeader("Authorization");
         //不合法的token

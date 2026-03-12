@@ -37,7 +37,7 @@ public class GradeController {
      */
     @GetMapping("/exist")
     @RolePermission
-    public ResponseVO<Boolean> exist(@RequestBody GradeEntity gradeEntity){
+    public ResponseVO<Boolean> exist(GradeEntity gradeEntity){
         boolean b = gradeService.existGrade(gradeEntity);
         return ResponseVO.success(b);
     }
@@ -73,7 +73,7 @@ public class GradeController {
      */
     @GetMapping("/getGradePageList")
     @RolePermission
-    public ResponseVO<IPage<GradeEntity>> getGradePageList(@RequestBody GradeReqDTO gradeReqDTO){
+    public ResponseVO<IPage<GradeEntity>> getGradePageList(GradeReqDTO gradeReqDTO){
         IPage<GradeEntity> userPageList = gradeService.getGradePageList(gradeReqDTO);
         return ResponseVO.success(userPageList);
     }

@@ -159,29 +159,60 @@ public class TaskListServiceImpl extends ServiceImpl<TaskListMapper, TaskListEnt
 
 
     /**
-     * 统计未提交
+     * 统计未提交（每分钟执行一次，扫描已截止但未提交的任务）
      */
-    @Scheduled(cron = "0/1 * * * * *")
+    @Scheduled(cron = "0 * * * * *")
     public void schedule(){
-        //查询所有未完成的任务以及该任务的截止时间
-        LambdaQueryWrapper<TaskAssignEntity> wrapper = Wrappers.lambdaQuery();
-        wrapper.eq(TaskAssignEntity::getStatus, UN_FINISHED);
-        List<TaskAssignEntity> taskAssignEntities = taskAssignMapper.selectList(wrapper);
-        if (CollectionUtils.isNotEmpty(taskAssignEntities)) {
-            //查询未完成任务的截止时间
-            Map<Long, TaskAssignEntity> map = taskAssignEntities.stream().collect(Collectors.toMap(TaskAssignEntity::getTaskId, Function.identity()));
-            List<TaskListEntity> taskListEntities = taskListMapper.selectByIds(map.keySet());
-            List<TaskListEntity> taskListEntityList = taskListEntities.stream().filter(taskListEntity -> taskListEntity.getDeadLine().isBefore(LocalDateTime.now())).toList();
-            List<TaskStatisticEntity> taskStatisticEntities = taskListEntityList.stream().map(taskListEntity -> {
-                TaskStatisticEntity taskStatisticEntity = new TaskStatisticEntity();
-                taskStatisticEntity.setTaskId(taskListEntity.getId());
-                taskStatisticEntity.setUserId(map.get(taskListEntity.getId()).getUserId());
-                taskStatisticEntity.setTaskName(taskListEntity.getName());
-                taskStatisticEntity.setDeadLine(taskListEntity.getDeadLine());
-                taskStatisticEntity.setUserName(userMapper.selectById(taskStatisticEntity.getUserId()).getUsername());
-                return taskStatisticEntity;
-            }).toList();
-            taskStatisticService.saveBatch(taskStatisticEntities);
+        // 1. 查询所有状态为“未完成”的分配记录
+        LambdaQueryWrapper<TaskAssignEntity> assignWrapper = Wrappers.lambdaQuery();
+        assignWrapper.eq(TaskAssignEntity::getStatus, UN_FINISHED);
+        List<TaskAssignEntity> overdueAssigns = taskAssignMapper.selectList(assignWrapper);
+
+        if (CollectionUtils.isEmpty(overdueAssigns)) {
+            return;
+        }
+
+        // 2. 获取去重后的任务ID列表
+        Set<Long> taskIds = overdueAssigns.stream()
+                .map(TaskAssignEntity::getTaskId)
+                .collect(Collectors.toSet());
+
+        // 3. 查询这些任务的具体信息（特别是截止时间）
+        List<TaskListEntity> taskListEntities = taskListMapper.selectByIds(taskIds);
+        Map<Long, TaskListEntity> taskMap = taskListEntities.stream()
+                .collect(Collectors.toMap(TaskListEntity::getId, Function.identity()));
+
+        // 4. 筛选出已经过期的分配记录，并准备统计数据
+        List<TaskStatisticEntity> toInsert = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+
+        for (TaskAssignEntity assign : overdueAssigns) {
+            TaskListEntity task = taskMap.get(assign.getTaskId());
+            // 如果任务已截止
+            if (task != null && task.getDeadLine().isBefore(now)) {
+                // 检查统计表中是否已存在该用户该任务的记录，避免重复插入
+                LambdaQueryWrapper<TaskStatisticEntity> existWrapper = Wrappers.lambdaQuery();
+                existWrapper.eq(TaskStatisticEntity::getTaskId, assign.getTaskId())
+                            .eq(TaskStatisticEntity::getUserId, assign.getUserId());
+                
+                if (taskStatisticService.count(existWrapper) == 0) {
+                    TaskStatisticEntity statistic = new TaskStatisticEntity();
+                    statistic.setTaskId(assign.getTaskId());
+                    statistic.setUserId(assign.getUserId());
+                    statistic.setTaskName(task.getName());
+                    statistic.setDeadLine(task.getDeadLine());
+                    
+                    UserEntity user = userMapper.selectById(assign.getUserId());
+                    statistic.setUserName(user != null ? user.getUsername() : "未知用户");
+                    
+                    toInsert.add(statistic);
+                }
+            }
+        }
+
+        // 5. 批量保存
+        if (CollectionUtils.isNotEmpty(toInsert)) {
+            taskStatisticService.saveBatch(toInsert);
         }
     }
 }
