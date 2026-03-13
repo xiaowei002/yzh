@@ -6,12 +6,14 @@
     :total="total"
     :fetch="load"
     :loading="loading"
-    :action-width="360"
+    :action-width="260"
     @reset="reset"
   >
+    <template #header-title>任务管理</template>
+    <template #header-description>发布、分配、追踪和导出学生任务及提交详情</template>
     <template #search-fields>
       <el-form-item label="名称">
-        <el-input v-model="query.name" placeholder="任务名称" clearable />
+        <el-input v-model="query.name" placeholder="请输入任务名称" clearable />
       </el-form-item>
       <el-form-item label="截止开始">
         <el-date-picker
@@ -33,23 +35,17 @@
       </el-form-item>
     </template>
     <template #header-actions>
-      <el-button type="primary" :icon="Plus" @click="$router.push('/task/create')">新增任务</el-button>
+      <el-button type="primary" :icon="Plus" @click="$router.push('/task/create')">新增</el-button>
     </template>
-    <template #actions>
-      <el-button type="primary" :icon="Plus" @click="$router.push('/task/create')">新增任务</el-button>
-    </template>
+
     <template #row-actions="{ row }">
-      <el-button size="small" :icon="View" @click="$router.push({ path: `/task/detail/${row.id}`, state: row })">
-        详情
-      </el-button>
-      <el-button size="small" type="primary" :icon="Edit" @click="$router.push({ path: `/task/edit/${row.id}`, state: row })">
-        编辑
-      </el-button>
-      <el-button size="small" :icon="Upload" @click="$router.push(`/task/upload/${row.id}`)">提交</el-button>
-      <el-button size="small" type="success" :icon="Download" @click="download(row)">下载</el-button>
+      <el-button link type="primary" @click="$router.push({ path: `/task/detail/${row.id}`, state: row })">详情</el-button>
+      <el-button link type="primary" @click="$router.push({ path: `/task/edit/${row.id}`, state: row })">编辑</el-button>
+      <el-button link type="primary" @click="$router.push(`/task/upload/${row.id}`)">提交</el-button>
+      <el-button link type="success" @click="download(row)">下载</el-button>
       <el-popconfirm title="确认删除该任务?" @confirm="remove(row)" width="200">
         <template #reference>
-          <el-button size="small" type="danger" :icon="Delete">删除</el-button>
+          <el-button link type="danger">删除</el-button>
         </template>
       </el-popconfirm>
     </template>

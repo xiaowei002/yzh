@@ -52,16 +52,10 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '班级列表' }
       },
       {
-        path: '/grade/create',
-        name: 'GradeCreate',
-        component: () => import('@/views/grade/GradeCreate.vue'),
-        meta: { title: '新增班级' }
-      },
-      {
-        path: '/grade/edit/:id',
-        name: 'GradeEdit',
-        component: () => import('@/views/grade/GradeEdit.vue'),
-        meta: { title: '编辑班级' }
+        path: '/grade/list',
+        name: 'GradeList',
+        component: () => import('@/views/grade/GradeList.vue'),
+        meta: { title: '班级列表' }
       },
       {
         path: '/grade/detail/:id',

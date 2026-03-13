@@ -44,10 +44,6 @@
             <el-icon><List /></el-icon>
             <template #title>班级列表</template>
           </el-menu-item>
-          <el-menu-item index="/grade/create">
-            <el-icon><Plus /></el-icon>
-            <template #title>新增班级</template>
-          </el-menu-item>
         </el-sub-menu>
         <el-sub-menu index="task">
           <template #title>
