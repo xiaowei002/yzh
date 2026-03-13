@@ -43,14 +43,10 @@ public class GradeServiceImpl extends ServiceImpl<GradeMapper, GradeEntity> impl
 
     @Override
     public boolean updateGrade(GradeEntity grade) {
-        if (Objects.isNull(grade)) {
+        if (Objects.isNull(grade) || Objects.isNull(grade.getId())) {
             throw new BizException("当前班级参数传递异常！");
         }
-        GradeEntity gradeEntity = gradeMapper.selectById(grade.getId());
-        if (Objects.isNull(gradeEntity)) {
-            throw new BizException("无法通过传入的id查询到班级！");
-        }
-        return gradeMapper.updateById(gradeEntity) > 0;
+        return gradeMapper.updateById(grade) > 0;
     }
 
     @Override

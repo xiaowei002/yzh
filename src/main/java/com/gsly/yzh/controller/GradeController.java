@@ -61,7 +61,7 @@ public class GradeController {
      */
     @PutMapping("/deleteById/{id}")
     @RolePermission
-    public ResponseVO<Boolean> deleteById(@PathVariable("id") Long id){
+    public ResponseVO<Boolean> deleteById(@PathVariable Long id){
         boolean b = gradeService.deleteGradeById(id);
         return ResponseVO.success(b);
     }
