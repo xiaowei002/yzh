@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card v-loading="loading">
     <h3>班级详情</h3>
     <el-descriptions :column="2" border>
       <el-descriptions-item label="学院">{{ grade.college }}</el-descriptions-item>
@@ -10,11 +10,13 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, onMounted } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { getGradeById } from '@/api/grade';
 import type { Grade } from '@/typings/backend';
 
 const route = useRoute();
+const loading = ref(false);
 const grade = reactive<Partial<Grade>>({
   id: String(route.params.id),
   college: '',
@@ -22,9 +24,18 @@ const grade = reactive<Partial<Grade>>({
   className: ''
 });
 
-onMounted(() => {
+onMounted(async () => {
   const state = history.state?.state as Grade | undefined;
-  if (state) Object.assign(grade, state);
+  if (state) {
+    Object.assign(grade, state);
+  } else {
+    loading.value = true;
+    try {
+      const data = await getGradeById(String(route.params.id));
+      if (data) Object.assign(grade, data);
+    } catch (e) { /* ignore */ }
+    finally { loading.value = false; }
+  }
 });
 </script>
 

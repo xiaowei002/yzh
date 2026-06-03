@@ -7,7 +7,7 @@
         </div>
       </template>
       <div class="form-wrapper">
-        <crud-form :model="form" :submit="onSubmit" @submitted="onSaved">
+        <crud-form :model="form" :rules="rules" :submit="onSubmit" @submitted="onSaved">
           <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="用户名">
@@ -66,6 +66,12 @@ import type { User } from '@/typings/backend';
 
 const route = useRoute();
 const router = useRouter();
+
+const rules = {
+  nickname: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
+  phone: [{ pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }],
+  email: [{ type: 'email', message: '请输入正确的邮箱', trigger: 'blur' }]
+};
 
 const form = reactive<Partial<User>>({
   id: String(route.params.id),

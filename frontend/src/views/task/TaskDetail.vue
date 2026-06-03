@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card v-loading="loading">
     <h3>任务详情</h3>
     <el-descriptions :column="2" border>
       <el-descriptions-item label="名称">{{ task.name }}</el-descriptions-item>
@@ -12,12 +12,14 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, onMounted } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { getTaskById } from '@/api/task';
 import type { TaskList } from '@/typings/backend';
 import { formatDateTime } from '@/utils/format';
 
 const route = useRoute();
+const loading = ref(false);
 const task = reactive<Partial<TaskList>>({
   id: String(route.params.id),
   name: '',
@@ -27,10 +29,17 @@ const task = reactive<Partial<TaskList>>({
   createdAt: ''
 });
 
-onMounted(() => {
+onMounted(async () => {
   const state = history.state?.state as TaskList | undefined;
   if (state) {
     Object.assign(task, state, { deadLine: formatDateTime(state.deadLine), createdAt: formatDateTime(state.createdAt) });
+  } else {
+    loading.value = true;
+    try {
+      const data = await getTaskById(String(route.params.id));
+      if (data) Object.assign(task, data, { deadLine: formatDateTime(data.deadLine), createdAt: formatDateTime(data.createdAt) });
+    } catch (e) { /* ignore */ }
+    finally { loading.value = false; }
   }
 });
 </script>

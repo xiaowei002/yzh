@@ -28,6 +28,12 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '仪表盘' }
       },
       {
+        path: '/profile',
+        name: 'Profile',
+        component: () => import('@/views/user/Profile.vue'),
+        meta: { title: '个人中心' }
+      },
+      {
         path: '/user/list',
         name: 'UserList',
         component: () => import('@/views/user/UserList.vue'),
@@ -46,13 +52,18 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '用户详情' }
       },
       {
+        path: '/grade/create',
+        name: 'GradeCreate',
+        component: () => import('@/views/grade/GradeCreate.vue'),
+        meta: { title: '新增班级' }
+      },
+      {
         path: '/grade/list',
         name: 'GradeList',
         component: () => import('@/views/grade/GradeList.vue'),
         meta: { title: '班级列表' }
       },
       {
-        path: '/grade/list',
         name: 'GradeList',
         component: () => import('@/views/grade/GradeList.vue'),
         meta: { title: '班级列表' }

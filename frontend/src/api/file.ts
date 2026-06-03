@@ -10,7 +10,7 @@ export const uploadTaskFile = (taskId: string, file: File) => {
   formData.append('taskId', taskId);
   formData.append('file', file);
   return httpPost<boolean>('/taskAssign/completeTask', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
+    headers: { 'Content-Type': undefined }
   });
 };
 

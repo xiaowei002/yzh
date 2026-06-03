@@ -90,7 +90,7 @@ const load = async () => {
       ...r,
       createdAt: formatDateTime(r.createdAt),
       role: r.role === 1 ? '管理员' : '普通用户',
-      status: r.status === 1 ? '启用' : '禁用'
+      status: r.status
     }));
     total.value = res.total;
   } finally {

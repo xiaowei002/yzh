@@ -1,0 +1,1 @@
+var fs = require(\"fs\"); var lines = fs.readFileSync(\"src/router/index.ts\",\"utf8\").split(\"\n\"); var seen = false; var out = []; for(var i = 0; i < lines.length; i++) { var l = lines[i]; if(l.indexOf(\"/grade/list\") >= 0) { if(seen) { continue } else { seen = true } } out.push(l) } fs.writeFileSync(\"src/router/index.ts\", out.join(\"\n\"))  

@@ -14,3 +14,6 @@ export const deleteTask = (id: string) =>
   httpPut<boolean>(`/taskList/delTaskList/${id}`);
 
 
+
+export const getTaskById = (id: string) =>
+  httpGet<TaskList>(`/taskList/getById/${id}`);

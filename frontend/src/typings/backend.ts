@@ -89,3 +89,10 @@ export interface ResponseVO<T> {
 }
 
 
+
+export interface LoginResponse {
+  token: string;
+  userId: string;
+  username: string;
+  role: number;
+}

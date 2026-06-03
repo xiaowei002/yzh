@@ -87,7 +87,7 @@
             </div>
             <div class="info-item">
               <span class="info-label">当前用户：</span>
-              <span class="info-value">{{ currentUser }}</span>
+              <span class="info-value">{{ auth.username || '管理员' }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">登录时间：</span>
@@ -116,11 +116,11 @@ import {
   Clock,
   InfoFilled,
   Plus,
-  Edit,
-  Search,
   Setting
 } from '@element-plus/icons-vue';
 import { fetchTaskPage } from '@/api/task';
+import { fetchUserPage } from '@/api/user';
+import { fetchGradePage } from '@/api/grade';
 import type { TaskList } from '@/typings/backend';
 import { formatDateTime } from '@/utils/format';
 
@@ -144,8 +144,24 @@ const quickActions = [
 ];
 
 const recentTasks = ref<TaskList[]>([]);
-const currentUser = ref('管理员');
+// currentUser is now read from auth store
 const loginTime = ref(formatDateTime(new Date().toISOString()));
+
+const loadStats = async () => {
+  try {
+    const [users, grades, tasks] = await Promise.all([
+      fetchUserPage({ current: 1, size: 1 }),
+      fetchGradePage({ current: 1, size: 1 }),
+      fetchTaskPage({ current: 1, size: 1 })
+    ]);
+    stats.value[0].value = String(users.total || 0);
+    stats.value[1].value = String(grades.total || 0);
+    stats.value[2].value = String(tasks.total || 0);
+    stats.value[3].value = String(tasks.records ? tasks.records.filter(function(t){ return t.deadLine && new Date(t.deadLine) > new Date(); }).length : 0);
+  } catch (e) {
+    console.error("loadStats error", e);
+  }
+};
 
 const loadRecentTasks = async () => {
   try {

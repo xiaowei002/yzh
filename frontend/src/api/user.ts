@@ -23,3 +23,6 @@ export const updateUser = (payload: Partial<User>) =>
   httpPut<boolean>('/user/update', payload);
 
 
+
+export const getUserById = (id: string) =>
+  httpGet<User>(`/user/getById/${id}`);

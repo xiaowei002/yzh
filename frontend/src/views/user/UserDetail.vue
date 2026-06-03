@@ -1,5 +1,5 @@
 <template>
-  <el-card>
+  <el-card v-loading="loading">
     <h3>用户详情</h3>
     <el-descriptions :column="2" border>
       <el-descriptions-item label="用户名">{{ user.username }}</el-descriptions-item>
@@ -14,12 +14,14 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, onMounted } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { getUserById } from '@/api/user';
 import type { User } from '@/typings/backend';
 import { formatDateTime } from '@/utils/format';
 
 const route = useRoute();
+const loading = ref(false);
 const user = reactive<Partial<User>>({
   id: String(route.params.id),
   username: '',
@@ -31,10 +33,17 @@ const user = reactive<Partial<User>>({
   createdAt: ''
 });
 
-onMounted(() => {
+onMounted(async () => {
   const state = history.state?.state as User | undefined;
   if (state) {
     Object.assign(user, state, { createdAt: formatDateTime(state.createdAt) });
+  } else {
+    loading.value = true;
+    try {
+      const data = await getUserById(String(route.params.id));
+      if (data) Object.assign(user, data, { createdAt: formatDateTime(data.createdAt) });
+    } catch (e) { /* ignore */ }
+    finally { loading.value = false; }
   }
 });
 </script>

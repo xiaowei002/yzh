@@ -49,8 +49,19 @@
             </el-button>
           </el-form-item>
         </el-form>
+        <el-dialog v-model="forgotVisible" title="重置密码" width="400px" :close-on-click-modal="false">
+          <el-form :model="forgotForm" label-width="80px">
+            <el-form-item label="用户名">
+              <el-input v-model="forgotForm.username" placeholder="请输入用户名" />
+            </el-form-item>
+          </el-form>
+          <template #footer>
+            <el-button @click="forgotVisible = false">取消</el-button>
+            <el-button type="primary" :loading="forgotLoading" @click="handleForgotPassword">确认重置</el-button>
+          </template>
+        </el-dialog>
         <div class="login-footer">
-          <el-link type="info" :underline="false">忘记密码？</el-link>
+          <el-link type="info" :underline="false" @click="forgotVisible = true">忘记密码？</el-link>
           <el-divider direction="vertical" />
           <el-link type="primary" :underline="false" @click="goToRegister">立即注册</el-link>
         </div>
@@ -64,7 +75,7 @@ import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { User, Lock, UserFilled } from '@element-plus/icons-vue';
-import { login } from '@/api/auth';
+import { login, resetPassword } from '@/api/auth';
 import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
@@ -87,14 +98,41 @@ const onSubmit = () => {
     if (!valid) return;
     loading.value = true;
     try {
-      const token = await login(form.username, form.password);
-      auth.setAuth(token);
+      const res = await login(form.username, form.password);
+      // 兼容后端返回纯字符串 token 或 LoginResponse 对象
+      if (typeof res === 'string') {
+        auth.setAuth(res, undefined, form.username);
+      } else {
+        auth.setAuth(res.token, res.userId, res.username, res.role);
+      }
       ElMessage.success('登录成功');
       router.push('/dashboard');
     } finally {
       loading.value = false;
     }
   });
+};
+
+const forgotVisible = ref(false);
+const forgotLoading = ref(false);
+const forgotForm = reactive({ username: '' });
+
+const handleForgotPassword = async () => {
+  if (!forgotForm.username) {
+    ElMessage.warning('请输入用户名');
+    return;
+  }
+  forgotLoading.value = true;
+  try {
+    await resetPassword(forgotForm.username);
+    ElMessage.success('密码重置成功，新密码已发送至关联邮箱');
+    forgotVisible.value = false;
+    forgotForm.username = '';
+  } catch (e) {
+    // 错误已由拦截器处理
+  } finally {
+    forgotLoading.value = false;
+  }
 };
 
 const goToRegister = () => {

@@ -85,7 +85,7 @@
           <el-dropdown @command="handleCommand">
             <div class="user-info">
               <el-avatar :size="32" :icon="UserFilled" />
-              <span class="username">管理员</span>
+              <span class="username">{{ auth.username || '管理员' }}</span>
               <el-icon class="arrow-down"><ArrowDown /></el-icon>
             </div>
             <template #dropdown>
@@ -93,10 +93,6 @@
                 <el-dropdown-item command="profile">
                   <el-icon><User /></el-icon>
                   个人中心
-                </el-dropdown-item>
-                <el-dropdown-item command="settings">
-                  <el-icon><Setting /></el-icon>
-                  系统设置
                 </el-dropdown-item>
                 <el-dropdown-item divided command="logout">
                   <el-icon><SwitchButton /></el-icon>
@@ -122,6 +118,7 @@
 import { ref, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import { logout } from '@/api/auth';
 import {
   Odometer,
   User,
@@ -133,7 +130,6 @@ import {
   Expand,
   UserFilled,
   ArrowDown,
-  Setting,
   SwitchButton,
   TrendCharts
 } from '@element-plus/icons-vue';
@@ -171,17 +167,15 @@ const handleCommand = (command: string) => {
         cancelButtonText: '取消',
         type: 'warning'
       })
-        .then(() => {
+        .then(async () => {
+          try { await logout(); } catch (e) { /* ignore */ }
           auth.clear();
           router.push('/login');
         })
         .catch(() => {});
       break;
     case 'profile':
-      ElMessageBox.alert('个人中心功能开发中', '提示');
-      break;
-    case 'settings':
-      ElMessageBox.alert('系统设置功能开发中', '提示');
+      router.push('/profile');
       break;
   }
 };

@@ -17,3 +17,6 @@ export const existGrade = (payload: Grade) =>
   httpGet<boolean>('/grade/exist', { params: payload });
 
 
+
+export const getGradeById = (id: string) =>
+  httpGet<Grade>(`/grade/getById/${id}`);
